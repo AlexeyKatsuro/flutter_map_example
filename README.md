@@ -16,7 +16,7 @@ A OpenStreetMap search [request](https://nominatim.org/release-docs/develop/api/
 
 ### Edge cases
 * Input field validation(empty check)
-* Show error message if search request was failed
+* Show a error message if the search request was failed
 * Show a message if the search didn't find anything
 
 ### Preview
