@@ -8,6 +8,7 @@ import 'package:flutter_map_example/domain/redux/app/app_state.dart';
 import 'package:flutter_map_example/domain/redux/home/home_actions.dart';
 import 'package:flutter_map_example/domain/redux/home/home_selectors.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:redux/redux.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,7 +18,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final MapController _mapController = MapController();
 
@@ -42,6 +43,40 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _animatedMapMove(LatLng destLocation, double destZoom) {
+    // Create some tweens. These serve to split up the transition from one location to another.
+    // In our case, we want to split the transition be<tween> our current map center and the destination.
+    final _latTween = Tween<double>(
+        begin: _mapController.center.latitude, end: destLocation.latitude);
+    final _lngTween = Tween<double>(
+        begin: _mapController.center.longitude, end: destLocation.longitude);
+    final _zoomTween = Tween<double>(begin: _mapController.zoom, end: destZoom);
+
+    // Create a animation controller that has a duration and a TickerProvider.
+    var controller = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
+    // The animation determines what path the animation will take. You can try different Curves values, although I found
+    // fastOutSlowIn to be my favorite.
+    Animation<double> animation =
+    CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
+
+    controller.addListener(() {
+      _mapController.move(
+          LatLng(_latTween.evaluate(animation), _lngTween.evaluate(animation)),
+          _zoomTween.evaluate(animation));
+    });
+
+    animation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        controller.dispose();
+      } else if (status == AnimationStatus.dismissed) {
+        controller.dispose();
+      }
+    });
+
+    controller.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
@@ -52,7 +87,10 @@ class _HomePageState extends State<HomePage> {
           final selectedPlace = newViewModel.selectedPlace;
           _controller.text = selectedPlace?.displayName ?? '';
           if (selectedPlace != null) {
-            _mapController.fitBounds(LatLngBounds.fromPoints(selectedPlace.boundingBox));
+            final bounds = LatLngBounds.fromPoints(selectedPlace.boundingBox);
+            var centerZoom =
+            _mapController.centerZoomFitBounds(bounds);
+            _animatedMapMove(centerZoom.center, centerZoom.zoom);
           }
         }
       },
