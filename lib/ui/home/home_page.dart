@@ -101,6 +101,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _build(BuildContext context, _ViewModel viewModel) {
     // Don't use this VM, it used only for mapEventSubscription
     _currentViewModel = viewModel;
+    final darkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body: FlutterMap(
         mapController: _mapController,
@@ -112,6 +113,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             backgroundColor: Colors.black,
             urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             subdomains: ['a', 'b', 'c'],
+            tilesContainerBuilder:
+            darkMode ? darkModeTilesContainerBuilder : null,
           ),
           MarkerLayerOptions(markers: [
             if (viewModel.selectedPlace != null)
