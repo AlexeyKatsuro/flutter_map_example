@@ -26,9 +26,10 @@ A OpenStreetMap search [request](https://nominatim.org/release-docs/develop/api/
 <img src="data/screenshot_3.webp" width="32%"/>
 </p>
 <p align="center">
-<img src="data/screenshot_4.webp" width="32%"/>
-<img src="data/screenshot_5.webp" width="32%"/>
-<img src="data/screenshot_6.webp" width="32%"/>
+<img src="data/screenshot_4.webp" width="25%"/>
+<img src="data/screenshot_5.webp" width="25%"/>
+<img src="data/screenshot_6.webp" width="25%"/>
+<img src="data/screenshot_7.webp" width="25%"/>
 </p>
 
 
